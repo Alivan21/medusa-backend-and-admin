@@ -22,27 +22,26 @@ try {
 } catch (e) {}
 
 // CORS when consuming Medusa from admin
-const ADMIN_CORS =
-  process.env.ADMIN_CORS || "http://localhost:7000,http://localhost:7001";
+const ADMIN_CORS = process.env.ADMIN_CORS || "http://localhost:7000,http://localhost:7001";
 
 // CORS to avoid issues when consuming Medusa from a client
 const STORE_CORS = process.env.STORE_CORS || "http://localhost:8000";
 
-const DATABASE_TYPE = process.env.DATABASE_TYPE || "sqlite";
-const DATABASE_URL = process.env.DATABASE_URL || "postgres://localhost/medusa-store";
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const DATABASE_TYPE = process.env.DATABASE_TYPE;
+const DATABASE_URL = process.env.DATABASE_URL;
+const REDIS_URL = process.env.REDIS_URL;
 
 const plugins = [
   `medusa-fulfillment-manual`,
   `medusa-payment-manual`,
   // To enable the admin plugin, uncomment the following lines and run `yarn add @medusajs/admin`
-  // {
-  //   resolve: "@medusajs/admin",
-  //   /** @type {import('@medusajs/admin').PluginOptions} */
-  //   options: {
-  //     autoRebuild: true,
-  //   },
-  // },
+  {
+    resolve: "@medusajs/admin",
+    /** @type {import('@medusajs/admin').PluginOptions} */
+    options: {
+      autoRebuild: true,
+    },
+  },
 ];
 
 const modules = {
@@ -58,7 +57,7 @@ const modules = {
       redisUrl: REDIS_URL
     }
   },*/
-}
+};
 
 /** @type {import('@medusajs/medusa').ConfigModule["projectConfig"]} */
 const projectConfig = {
@@ -68,7 +67,7 @@ const projectConfig = {
   database_type: DATABASE_TYPE,
   store_cors: STORE_CORS,
   admin_cors: ADMIN_CORS,
-}
+};
 
 if (REDIS_URL) {
   projectConfig.redis_url = REDIS_URL;
@@ -79,10 +78,12 @@ if (DATABASE_URL && DATABASE_TYPE === "postgres") {
   delete projectConfig["database_database"];
 }
 
-
 /** @type {import('@medusajs/medusa').ConfigModule} */
 module.exports = {
-  projectConfig,
+  projectConfig: {
+    database_url: process.env.DATABASE_URL,
+    database_type: "postgres",
+  },
   plugins,
-	modules,
+  modules,
 };
